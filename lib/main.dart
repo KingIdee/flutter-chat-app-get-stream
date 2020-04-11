@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterchatapp/login_page.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 void main() => runApp(MyApp());
 
@@ -6,6 +8,27 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+//    final client = Client(
+//      'b67pax5b2wdq',
+//      logLevel: Level.INFO,
+//      tokenProvider: (_){
+//        return "";
+//      }
+//    );
+//
+//    final channel = client.channel('messaging', id: 'godevs');
+//
+//    client.devToken(userId);
+//
+//
+//    await client.setUser(
+//      User(id: 'falling-paper-0'),
+//      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZmFsbGluZy1wYXBlci0wIn0.TZS3I-cftZlJHQicCp4RatTZeVsZqaHW6Lm7UPcj5V0',
+//    );
+
+
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -20,7 +43,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: LoginScreen(),
     );
   }
 }
@@ -75,20 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
