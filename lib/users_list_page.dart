@@ -11,35 +11,52 @@ class _UsersListPageState extends State<UsersListPage> {
   List<User> usersList = [];
   bool loadingData = true;
 
-//  var usersStream;
-
   @override
   void initState() {
     super.initState();
-    fetchUsers();
+    _fetchUsers();
   }
 
-  void fetchUsers() async {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+          child: loadingData
+              ? Container(child: Center(child: CircularProgressIndicator()))
+              : usersList.length == 0
+                  ? Container(
+                      child: Center(child: Text('Could not fetch users')))
+                  : ListView.separated(
+                      padding: EdgeInsets.all(16.0),
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          title: Text(usersList[index].name),
+                          onTap: () {
+                            _navigateToChannel(index);
+                          },
+                        );
+                      },
+                      itemCount: usersList.length)),
+    );
+  }
+
+  _fetchUsers() async {
     setState(() {
       loadingData = true;
     });
 
-
-
-    var currentUser = StreamChat.of(context);
-
-    StreamChat.of(context).channelsStream;
-    print(StreamChat.of(context).user.id);
-    StreamChat.of(context).client.queryUsers({
-//      'members': {
-//        '\$in': [StreamChat.of(context).user.id],
-//      }
-    }, [
-      SortOption('last_message_at')
-    ], null).then((value) {
-      print(value.users.toString());
+    StreamChat.of(context)
+        .client
+        .queryUsers({}, [SortOption('last_message_at')], null).then((value) {
       setState(() {
-        usersList = value.users;
+        if (value.users.length > 0) {
+          usersList = value.users.where((element) {
+            return element.id != StreamChat.of(context).user.id;
+          }).toList();
+        }
         loadingData = false;
       });
     }).catchError((error) {
@@ -51,74 +68,11 @@ class _UsersListPageState extends State<UsersListPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: loadingData
-          ? Container(
-              child: Center(child: CircularProgressIndicator()),
-            )
-          : usersList.length == 0
-              ? Container(
-                  child: Center(child: Text('Could not fetch users')),
-                )
-              : ListView.builder(
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(usersList[index].name),
-                      onTap: () {
-                        navigateToChannel(index);
-                      },
-                    );
-                  },
-                  itemCount: usersList.length,
-                ),
-//      body: StreamBuilder<List<User>>(
-//          stream: usersStream,
-//          builder: (context, snapshot) {
-//            if (!snapshot.hasData) {
-//              return Center(
-//                child: CircularProgressIndicator(),
-//              );
-//            } else if (snapshot.hasError) {
-//              return Center(
-//                child: Container(
-//                  child: Text('An error occurred in fetching users'),
-//                ),
-//              );
-//            } else {
-//              return ListView.builder(
-//                itemBuilder: (BuildContext context, int index) {
-//                  return ListTile(
-//                    title: Text(snapshot.data[index].name),
-//                  );
-//                },
-//                itemCount: snapshot.data.length,
-//              );
-//            }
-//          }),
-
-//      body: ChannelListView(
-//        filter: {
-//          'members': {
-//            '\$in': [StreamChat.of(context).user.id],
-//          }
-//        },
-//        sort: [SortOption('last_message_at')],
-//        pagination: PaginationParams(
-//          limit: 20,
-//        ),
-//        channelWidget: ChannelPage(),
-//      ),
-    );
-  }
-
-  void navigateToChannel(int index) async {
+  void _navigateToChannel(int index) async {
     var client = StreamChat.of(context).client;
     var currentUser = StreamChat.of(context).user;
 
     var channel;
-
 
     await client
         .channel("messaging", extraData: {
@@ -132,18 +86,20 @@ class _UsersListPageState extends State<UsersListPage> {
           print(error);
         });
 
-    // TODO: check that
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return StreamChannel(
-            child: ChannelPage(),
-            channel: channel,
-          );
-        },
-      ),
-    );
+    if (channel != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return StreamChannel(
+              child: ChannelPage(),
+              channel: channel,
+            );
+          },
+        ),
+      );
+    } else {
+      // Could not find a channel;
+    }
   }
 }
