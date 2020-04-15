@@ -8,8 +8,8 @@ class UsersListPage extends StatefulWidget {
 }
 
 class _UsersListPageState extends State<UsersListPage> {
-  List<User> usersList = [];
-  bool loadingData = true;
+  List<User> _usersList = [];
+  bool _loadingData = true;
 
   @override
   void initState() {
@@ -21,9 +21,9 @@ class _UsersListPageState extends State<UsersListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: loadingData
+          child: _loadingData
               ? Container(child: Center(child: CircularProgressIndicator()))
-              : usersList.length == 0
+              : _usersList.length == 0
                   ? Container(
                       child: Center(child: Text('Could not fetch users')))
                   : ListView.separated(
@@ -33,19 +33,19 @@ class _UsersListPageState extends State<UsersListPage> {
                       },
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
-                          title: Text(usersList[index].name),
+                          title: Text(_usersList[index].name),
                           onTap: () {
                             _navigateToChannel(index);
                           },
                         );
                       },
-                      itemCount: usersList.length)),
+                      itemCount: _usersList.length)),
     );
   }
 
   _fetchUsers() async {
     setState(() {
-      loadingData = true;
+      _loadingData = true;
     });
 
     StreamChat.of(context)
@@ -53,15 +53,15 @@ class _UsersListPageState extends State<UsersListPage> {
         .queryUsers({}, [SortOption('last_message_at')], null).then((value) {
       setState(() {
         if (value.users.length > 0) {
-          usersList = value.users.where((element) {
+          _usersList = value.users.where((element) {
             return element.id != StreamChat.of(context).user.id;
           }).toList();
         }
-        loadingData = false;
+        _loadingData = false;
       });
     }).catchError((error) {
       setState(() {
-        loadingData = false;
+        _loadingData = false;
       });
       print(error);
       // Could not fetch users
@@ -76,7 +76,7 @@ class _UsersListPageState extends State<UsersListPage> {
 
     await client
         .channel("messaging", extraData: {
-          "members": [currentUser.id, usersList[index].id]
+          "members": [currentUser.id, _usersList[index].id]
         })
         .create()
         .then((response) {

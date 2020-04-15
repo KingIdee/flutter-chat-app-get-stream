@@ -12,12 +12,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  var userIDController = TextEditingController();
+  var _userIDController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final _client = Client('djpmq3fg8jnc', logLevel: Level.INFO);
 
   @override
   void dispose() {
-    userIDController.dispose();
+    _userIDController.dispose();
     super.dispose();
   }
 
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                   margin: EdgeInsets.only(top: 5),
                   child: TextFormField(
-                      controller: userIDController,
+                      controller: _userIDController,
                       decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _loginUser() async {
-    final userID = userIDController.text.trim();
+    final userID = _userIDController.text.trim();
 
     if (userID.isEmpty) {
       SnackBar snackBar = SnackBar(content: Text('User id is empty'));
@@ -86,17 +87,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     var userToken = jsonDecode(tokenResponse.body)['token'];
 
-    final client = Client(
-      'djpmq3fg8jnc',
-      logLevel: Level.INFO,
-    );
-
-    await client.setUser(User(id: userID), userToken).then((response) {
+    await _client.setUser(User(id: userID), userToken).then((response) {
       Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => StreamChat(
-                  client: client,
+                  client: _client,
                   child: UsersListPage(),
                 )),
       );
