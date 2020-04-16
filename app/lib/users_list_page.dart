@@ -72,7 +72,7 @@ class _UsersListPageState extends State<UsersListPage> {
     var client = StreamChat.of(context).client;
     var currentUser = StreamChat.of(context).user;
 
-    var channel;
+    Channel channel;
 
     await client
         .channel("messaging", extraData: {
@@ -81,6 +81,7 @@ class _UsersListPageState extends State<UsersListPage> {
         .create()
         .then((response) {
           channel = Channel.fromState(client, response);
+          channel.watch();
         })
         .catchError((error) {
           print(error);
