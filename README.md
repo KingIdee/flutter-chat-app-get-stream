@@ -1,7 +1,7 @@
 # One on one chat app with Stream
 A chat app that enables a logged-in user to chat with other users. You can follow the tutorial to build it here.
 
-### Prerequisites
+## Prerequisites
 
 You need a [Stream app](https://getstream.io/) to successfully run this. You can create one when you signup. In addition to that, you need the following installed on your machine:
 
